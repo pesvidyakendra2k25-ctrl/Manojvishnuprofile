@@ -43,3 +43,28 @@ for (var i = 0; i < navLinks.length; i++) {
     menuBtn.style.pointerEvents = "auto";
   });
 }
+
+// Scroll Animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('animate');
+    }
+  });
+});
+
+const sections = document.querySelectorAll('section');
+sections.forEach((section) => {
+  observer.observe(section);
+});
+
+// Form Handling
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+  contactForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Simple form handling - in real scenario, send to server
+    alert('Thank you for your message! I will get back to you soon.');
+    contactForm.reset();
+  });
+}
