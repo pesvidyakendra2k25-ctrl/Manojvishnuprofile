@@ -15,9 +15,22 @@
     <link rel="stylesheet" href="style.css" />
     <!-- Fontawesome CDN Link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
+    <!-- Three.js for 3D WebGL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
+    <!-- Preloader -->
+    <div id="preloader">
+      <div class="preloader-content">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    </div>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
     <!-- Move to up button -->
     <div class="scroll-button">
       <a href="#home"><i class="fas fa-arrow-up"></i></a>
@@ -31,6 +44,7 @@
           <li><a href="#about">About</a></li>
           <li><a href="#skills">Skills</a></li>
           <li><a href="#portfolio">Portfolio</a></li>
+          <li><a href="#experience">Experience</a></li>
           <li><a href="#services">Services</a></li>
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -41,6 +55,7 @@
         <div class="media-icons">
           <a href="https://wa.me/9886670411" target="_blank"><i class="fab fa-whatsapp"></i></a>
           <a href="https://www.instagram.com/hacker_phoniex_?igsh=aHUxNnE5djdxbXhx" target="_blank"><i class="fab fa-instagram"></i></a>
+          <button id="dark-mode-toggle" class="dark-mode-btn"><i class="fas fa-moon"></i></button>
         </div>
       </div>
       <div class="menu-btn">
@@ -50,11 +65,40 @@
 
     <!-- Home Section Start -->
     <section class="home" id="home">
+      <!-- 3D Wave Grid Canvas -->
+      <canvas id="wave-grid-canvas"></canvas>
+
+      <!-- SVG Wave Animation -->
+      <div class="svg-wave-container">
+        <svg class="svg-wave" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.8" />
+              <stop offset="50%" style="stop-color:#0080ff;stop-opacity:0.6" />
+              <stop offset="100%" style="stop-color:#8000ff;stop-opacity:0.4" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <path class="wave-path" d="M0,600 Q480,400 960,500 T1920,450 V1080 H0 Z" fill="url(#waveGradient)" filter="url(#glow)" opacity="0.3"/>
+          <path class="wave-path wave-path-2" d="M0,700 Q480,500 960,600 T1920,550 V1080 H0 Z" fill="url(#waveGradient)" filter="url(#glow)" opacity="0.2"/>
+          <path class="wave-path wave-path-3" d="M0,800 Q480,600 960,700 T1920,650 V1080 H0 Z" fill="url(#waveGradient)" filter="url(#glow)" opacity="0.1"/>
+        </svg>
+      </div>
+
+      <!-- Canvas Wave Animation -->
+      <canvas id="canvas-wave-bg" class="canvas-wave-bg"></canvas>
+
       <div class="home-content">
         <div class="text">
           <div class="text-one" style="color: white;">Hello,</div>
           <div class="text-two" style="color: white;">I'm Manoj</div>
-          <div class="text-three">Web Developer & Designer</div>
+          <div class="text-three">Web Developer & <span class="typing"></span></div>
         </div>
         <div class="button">
           <button onclick="window.open('https://wa.me/9886670411', '_blank')">Get Your Free Quote Now!</button>
@@ -68,7 +112,7 @@
         <div class="title"><span>About Me</span></div>
         <div class="about-details">
           <div class="left">
-            <img src="images/about manoj01.jpeg" alt="Manoj - Professional Web Developer" />
+            <img src="images/about manoj01.png" alt="Manoj - Professional Web Developer" />
           </div>
           <div class="right">
             <div class="topic">Designing Is My Passion</div>
@@ -133,12 +177,20 @@ I mainly work on institution and business websites where performance, clarity, a
       </div>
     </section>
 
+
+
     <!-- Portfolio Section Start -->
     <section class="portfolio" id="portfolio">
       <div class="content">
         <div class="title"><span>My Portfolio</span></div>
+        <div class="portfolio-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="web">Web Development</button>
+          <button class="filter-btn" data-filter="design">Design</button>
+          <button class="filter-btn" data-filter="template">Templates</button>
+        </div>
         <div class="portfolio-details">
-          <div class="portfolio-box">
+          <div class="portfolio-box" data-category="web">
             <div class="portfolio-image">
               <img src="images/pesvidyakendra.png" alt="PES Vidyakendra Website Project" />
             </div>
@@ -148,7 +200,7 @@ I mainly work on institution and business websites where performance, clarity, a
               <a href="#" class="portfolio-link">https://pesvidyakendraedu.in/ </a>
             </div>
           </div>
-          <div class="portfolio-box">
+          <div class="portfolio-box" data-category="template">
             <div class="portfolio-image">
               <img src="images/School Website Template.png" alt="School Website Template" />
             </div>
@@ -158,7 +210,7 @@ I mainly work on institution and business websites where performance, clarity, a
               <a href="#" class="portfolio-link">contact 9886670411</a>
             </div>
           </div>
-          <div class="portfolio-box">
+          <div class="portfolio-box" data-category="design">
             <div class="portfolio-image">
               <img src="images/Landing Page for Events.png" alt="Landing Page Design" />
             </div>
@@ -229,40 +281,54 @@ My logos are created to represent your brand clearly and work well on websites, 
     <section class="testimonials" id="testimonials">
       <div class="content">
         <div class="title"><span>Client Testimonials</span></div>
-        <div class="testimonials-details">
-          <div class="testimonial-box">
-            <div class="testimonial-content">
-              <p>"Manoj delivered an excellent website for our school. The design is modern, responsive, and easy to navigate. Parents and students love it!"</p>
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <div class="testimonial-quote">
+              <i class="fas fa-quote-left"></i>
+              <p>"Manoj delivered an excellent website for our school. The design is modern, responsive, and easy to navigate. Parents and students love it! Highly recommended for educational institutions."</p>
             </div>
             <div class="testimonial-author">
-              <img src="images/logo.png" alt="Client Photo" />
-              <div class="author-info">
-                <h4>Principal  dharshini</h4>
-                <span>PES Vidyakendra</span>
+              <div class="author-avatar">
+                <img src="images/logo.png" alt="PES Vidyakendra Logo" />
+              </div>
+              <div class="author-details">
+                <h4>Principal Dharshini</h4>
+                <span class="author-role">Principal</span>
+                <span class="author-school">PES Vidyakendra School</span>
               </div>
             </div>
           </div>
-          <div class="testimonial-box">
-            <div class="testimonial-content">
-              <p>"Affordable pricing and quick delivery. The website looks professional and has helped us attract more students."</p>
+
+          <div class="testimonial-card">
+            <div class="testimonial-quote">
+              <i class="fas fa-quote-left"></i>
+              <p>"Affordable pricing and quick delivery. The website looks professional and has helped us attract more students. Excellent communication throughout the project."</p>
             </div>
             <div class="testimonial-author">
-              <img src="images/Blue and Yellow Modern School Logo.png" alt="Client Photo" />
-              <div class="author-info">
-                <h4>Management</h4>
-                <span>City Academy</span>
+              <div class="author-avatar">
+                <img src="images/Blue and Yellow Modern School Logo.png" alt="City Academy Logo" />
+              </div>
+              <div class="author-details">
+                <h4>Management Team</h4>
+                <span class="author-role">Administration</span>
+                <span class="author-school">City Academy</span>
               </div>
             </div>
           </div>
-          <div class="testimonial-box">
-            <div class="testimonial-content">
-              <p>"Great communication throughout the project. Manoj understood our needs and delivered beyond expectations."</p>
+
+          <div class="testimonial-card">
+            <div class="testimonial-quote">
+              <i class="fas fa-quote-left"></i>
+              <p>"Great communication throughout the project. Manoj understood our needs perfectly and delivered beyond expectations. The website has significantly improved our online presence."</p>
             </div>
             <div class="testimonial-author">
-              <img src="images/banner logo 02.jpg" alt="Client Photo" />
-              <div class="author-info">
-                <h4>Karate Academy</h4>
-                <span>Tech Institute</span>
+              <div class="author-avatar">
+                <img src="images/banner logo 02.jpg" alt="Tech Institute Logo" />
+              </div>
+              <div class="author-details">
+                <h4>Director</h4>
+                <span class="author-role">Director</span>
+                <span class="author-school">Tech Institute</span>
               </div>
             </div>
           </div>
@@ -323,21 +389,120 @@ My logos are created to represent your brand clearly and work well on websites, 
     <section class="contact" id="contact">
       <div class="content">
         <div class="title"><span>Have a Project in Mind?</span></div>
-        <div class="text">
-          <div class="topic">Have Any Project?</div>
-          <p>Looking for a professional website or logo for your school, institution, or business?
+        <div class="contact-container">
+          <div class="contact-info">
+            <div class="topic">Have Any Project?</div>
+            <p>Looking for a professional website or logo for your school, institution, or business?
 
 I’m available to discuss your project requirements and help you build a clean, responsive, and affordable solution.
 
 Feel free to contact me for project discussions, pricing details, or any questions.</p>
-          <div class="button">
-            <button onclick="window.open('https://wa.me/9886670411', '_blank')">Let's Chat</button>
+            <div class="contact-details">
+              <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <span>manojvishmu2004@gmail.com</span>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <span>+91 9886670411</span>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Nemlmanagala, Bangalore Rural, India</span>
+              </div>
+            </div>
+          </div>
+          <div class="contact-form">
+            <form id="contact-form">
+              <div class="form-group">
+                <input type="text" id="name" name="name" placeholder="Your Name" required>
+              </div>
+              <div class="form-group">
+                <input type="email" id="email" name="email" placeholder="Your Email" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="subject" name="subject" placeholder="Subject" required>
+              </div>
+              <div class="form-group">
+                <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
+              </div>
+              <button type="submit" class="submit-btn">Send Message</button>
+            </form>
           </div>
         </div>
       </div>
     </section>
 
-   
+    <!-- Newsletter Section -->
+    <section class="newsletter" id="newsletter">
+      <div class="content">
+        <div class="newsletter-content">
+          <div class="newsletter-text">
+            <h2>Stay Updated</h2>
+            <p>Subscribe to my newsletter for the latest web development tips, project updates, and exclusive offers for schools and institutions.</p>
+          </div>
+          <div class="newsletter-form">
+            <form id="newsletter-form">
+              <div class="form-group">
+                <input type="email" id="newsletter-email" placeholder="Enter your email address" required>
+                <button type="submit" class="newsletter-btn">
+                  <i class="fas fa-paper-plane"></i>
+                  Subscribe
+                </button>
+              </div>
+            </form>
+            <p class="newsletter-note">No spam, unsubscribe at any time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Manoj</h3>
+          <p>Professional web developer specializing in creating modern, responsive websites for schools, colleges, and institutions.</p>
+          <div class="social-links">
+            <a href="https://wa.me/9886670411" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com/hacker_phoniex_?igsh=aHUxNnE5djdxbXhx" target="_blank"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="#services">Web Development</a></li>
+            <li><a href="#services">School Websites</a></li>
+            <li><a href="#services">Website Redesign</a></li>
+            <li><a href="#services">Logo Design</a></li>
+            <li><a href="#services">Graphic Design</a></li>
+            <li><a href="#services">Landing Pages</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Contact Info</h4>
+          <p><i class="fas fa-envelope"></i> manoj2004@gmail.com</p>
+          <p><i class="fas fa-phone"></i> +91 9886670411</p>
+          <p><i class="fas fa-map-marker-alt"></i> nelamanagala, bengaluru rural,India</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Manoj. All rights reserved. | Designed with <i class="fas fa-heart"></i> by Manojwebsolution</p>
+      </div>
+    </footer>
 
     <script src="script.js"></script>
   </body>
